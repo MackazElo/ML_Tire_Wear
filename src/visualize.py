@@ -27,11 +27,17 @@ def plot_confusion(model, loader, class_names, device):
     plt.title("Confusion Matrix")
     plt.show()
 
-def show_predictions(model, loader, class_names, device, n=6):
+def show_predictions(model, loader, class_names, device, n=100, cols=10):
+    import matplotlib.pyplot as plt
+    from matplotlib.gridspec import GridSpec
+
     model.eval()
     images_shown = 0
+    rows = n // cols + int(n % cols != 0)
 
-    fig, axes = plt.subplots(1, n, figsize=(n * 3, 3))
+    fig = plt.figure(figsize=(cols * 2.2, rows * 2.8))
+    gs = GridSpec(rows, cols, figure=fig)
+
     with torch.no_grad():
         for images, labels in loader:
             images = images.to(device)
@@ -42,27 +48,38 @@ def show_predictions(model, loader, class_names, device, n=6):
                 if images_shown >= n:
                     break
 
-                img = images[i].cpu().permute(1, 2, 0)  # CxHxW -> HxWxC
-                img = img * 0.5 + 0.5  # od-norm
+                row = images_shown // cols
+                col = images_shown % cols
+
+                ax = fig.add_subplot(gs[row, col])
+                img = images[i].cpu().permute(1, 2, 0)
+                img = img * 0.5 + 0.5
                 img = img.numpy()
 
                 color = "green" if preds[i] == labels[i].to(device) else "red"
-                axes[images_shown].imshow(img)
-                axes[images_shown].set_title(f"True: {class_names[labels[i]]}\nPred: {class_names[preds[i]]}", color=color)
-                axes[images_shown].axis("off")
-
+                ax.imshow(img)
+                ax.set_title(
+                    f"True: {class_names[labels[i]]}\nPred: {class_names[preds[i]]}",
+                    color=color,
+                    fontsize=8,
+                    pad=6
+                )
+                ax.axis("off")
                 images_shown += 1
 
             if images_shown >= n:
                 break
 
+    plt.subplots_adjust(wspace=0.3, hspace=0.5)
     plt.tight_layout()
     plt.show()
+
+
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    data_path = "../data"
+    data_path = "..\data"
     class_names = ["new", "worn"]
 
     loaders = get_data_loaders(data_path, batch_size=8)
@@ -71,7 +88,7 @@ if __name__ == "__main__":
     model = model.to(device)
 
     print("📊 Macierz pomyłek:")
-    plot_confusion(model, loaders["val"], class_names, device)
+    plot_confusion(model, loaders["test"], class_names, device)
 
     print("\n🔍 Przykładowe predykcje:")
-    show_predictions(model, loaders["val"], class_names, device, n=6)
+    show_predictions(model, loaders["test"], class_names, device, n=50)
