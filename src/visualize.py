@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
 
 from data_loader import get_data_loaders
 from model import get_model
@@ -79,7 +82,7 @@ def show_predictions(model, loader, class_names, device, n=100, cols=10):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    data_path = "..\data"
+    data_path = "data"
     class_names = ["new", "worn"]
 
     loaders = get_data_loaders(data_path, batch_size=8)

@@ -9,16 +9,13 @@ from model import get_model
 def train_model(data_path, num_epochs=10, batch_size=32, lr=0.001, save_path="model_best.pt"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Data
     loaders = get_data_loaders(data_path, batch_size=batch_size, augment=True)
     train_loader = loaders.get("train")
     val_loader = loaders.get("val")
 
-    # Model
     model = get_model(num_classes=2)
     model = model.to(device)
 
-    # Loss + Opt
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
@@ -49,7 +46,6 @@ def train_model(data_path, num_epochs=10, batch_size=32, lr=0.001, save_path="mo
 
         print(f"Epoch {epoch+1}: Train Loss={total_loss:.4f}, Train Acc={train_acc:.2f}, Val Acc={val_acc:.2f}")
 
-        # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), save_path)
@@ -69,4 +65,4 @@ def evaluate(model, loader, device):
     return correct / total if total > 0 else 0.0
 
 if __name__ == "__main__":
-    train_model(data_path="../data", num_epochs=10)
+    train_model(data_path="data", num_epochs=15)

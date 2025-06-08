@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
 from torchvision import transforms, datasets
 from torch.utils.data import DataLoader
 
@@ -16,7 +18,6 @@ def get_data_loaders(data_dir, batch_size=32, image_size=(224, 224), augment=Fal
         dict: Słownik z DataLoaderami dla 'train', 'val', 'test'.
     """
 
-    # Transformacje
     base_transforms = [
         transforms.Resize(image_size),
         transforms.ToTensor(),
@@ -35,8 +36,7 @@ def get_data_loaders(data_dir, batch_size=32, image_size=(224, 224), augment=Fal
     for split in ['train', 'val', 'test']:
         path = os.path.join(data_dir, split)
         if not os.path.exists(path):
-            continue  # Pomijamy jeśli brak zbioru
-
+            continue  
         transform = train_transforms if split == 'train' else test_transforms
 
         dataset = datasets.ImageFolder(root=path, transform=transform)

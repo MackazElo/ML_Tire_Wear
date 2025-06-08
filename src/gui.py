@@ -15,12 +15,10 @@ class TireClassifierGUI:
         self.root.configure(bg='#1e1e1e')
         self.root.resizable(True, True)
         
-        # Model i transformacje
         self.model = None
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.class_names = ["New", "Worn"]
         
-        # Transformacje dla predykcji
         self.transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -30,11 +28,9 @@ class TireClassifierGUI:
         self.setup_ui()
         
     def setup_ui(self):
-        # Main container
         main_container = tk.Frame(self.root, bg='#1e1e1e')
         main_container.pack(fill='both', expand=True, padx=40, pady=40)
         
-        # Header
         header_frame = tk.Frame(main_container, bg='#1e1e1e')
         header_frame.pack(fill='x', pady=(0, 30))
         
@@ -56,15 +52,12 @@ class TireClassifierGUI:
         )
         subtitle_label.pack(pady=(5, 0))
         
-        # Content area
         content_frame = tk.Frame(main_container, bg='#1e1e1e')
         content_frame.pack(fill='both', expand=True)
         
-        # Left panel - Image display
         left_panel = tk.Frame(content_frame, bg='#2d2d2d', relief='flat', bd=0)
         left_panel.pack(side='left', fill='both', expand=True, padx=(0, 20))
         
-        # Image area with rounded appearance
         image_container = tk.Frame(left_panel, bg='#2d2d2d')
         image_container.pack(fill='both', expand=True, padx=20, pady=20)
         
@@ -78,16 +71,13 @@ class TireClassifierGUI:
         )
         self.image_label.pack(expand=True)
         
-        # Right panel - Controls and results
         right_panel = tk.Frame(content_frame, bg='#1e1e1e', width=300)
         right_panel.pack(side='right', fill='y', padx=(20, 0))
-        right_panel.pack_propagate(False)  # Maintain fixed width
+        right_panel.pack_propagate(False) 
         
-        # Controls section
         controls_frame = tk.Frame(right_panel, bg='#1e1e1e')
         controls_frame.pack(fill='x', pady=(20, 0))
         
-        # Upload button
         self.upload_btn = tk.Button(
             controls_frame,
             text="Upload Image",
@@ -105,7 +95,6 @@ class TireClassifierGUI:
         )
         self.upload_btn.pack(fill='x', pady=(0, 15))
         
-        # Load model button (smaller, secondary)
         self.load_model_btn = tk.Button(
             controls_frame,
             text="Load Custom Model",
@@ -123,7 +112,6 @@ class TireClassifierGUI:
         )
         self.load_model_btn.pack(fill='x')
         
-        # Status indicator
         status_frame = tk.Frame(right_panel, bg='#1e1e1e')
         status_frame.pack(fill='x', pady=(30, 0))
         
@@ -147,7 +135,6 @@ class TireClassifierGUI:
         )
         self.status_label.pack(anchor='w', pady=(5, 0))
         
-        # Results section
         results_frame = tk.Frame(right_panel, bg='#1e1e1e')
         results_frame.pack(fill='x', pady=(40, 0))
         
@@ -160,7 +147,6 @@ class TireClassifierGUI:
         )
         results_title.pack(anchor='w')
         
-        # Result card
         self.result_card = tk.Frame(results_frame, bg='#2d2d2d', relief='flat', bd=0)
         self.result_card.pack(fill='x', pady=(10, 0))
         
@@ -175,7 +161,6 @@ class TireClassifierGUI:
         )
         self.result_label.pack()
         
-        # Progress bar (initially hidden)
         self.progress = ttk.Progressbar(
             right_panel, 
             mode='indeterminate',
@@ -183,7 +168,6 @@ class TireClassifierGUI:
             style='Custom.Horizontal.TProgressbar'
         )
         
-        # Configure progress bar style
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('Custom.Horizontal.TProgressbar', 
@@ -243,16 +227,13 @@ class TireClassifierGUI:
             if not image_path:
                 return
             
-            # Show progress
             self.progress.pack(pady=(20, 0))
             self.progress.start()
             self.status_label.config(text="Analyzing image...", fg='#007acc')
             self.root.update()
             
-            # Display image
             self.display_image(image_path)
             
-            # Classify if model is available
             if self.model:
                 prediction, confidence = self.classify_image(image_path)
                 self.display_result(prediction, confidence)
@@ -263,7 +244,6 @@ class TireClassifierGUI:
                 )
                 self.status_label.config(text="Model required for analysis", fg='#f44336')
             
-            # Hide progress
             self.progress.stop()
             self.progress.pack_forget()
             
@@ -277,7 +257,6 @@ class TireClassifierGUI:
         """Wyświetla obraz w GUI"""
         image = Image.open(image_path)
         
-        # Calculate size to fit in display area while maintaining aspect ratio
         display_width, display_height = 400, 400
         image.thumbnail((display_width, display_height), Image.Resampling.LANCZOS)
         
@@ -303,17 +282,15 @@ class TireClassifierGUI:
         class_name = self.class_names[prediction]
         confidence_percent = confidence * 100
         
-        # Color and styling based on prediction
-        if prediction == 0:  # New
+        if prediction == 0:  
             color = '#4CAF50'
             status_icon = '✓'
             bg_color = '#1b5e20'
-        else:  # Worn
+        else:  
             color = '#ff5722'
             status_icon = '⚠'
             bg_color = '#bf360c'
         
-        # Update result display
         result_text = f"{status_icon} {class_name}\n{confidence_percent:.1f}% confidence"
         self.result_label.config(
             text=result_text, 
@@ -323,7 +300,6 @@ class TireClassifierGUI:
         )
         self.result_card.config(bg=color)
         
-        # Update status
         self.status_label.config(
             text=f"Analysis complete: {class_name.lower()} tire detected",
             fg=color
@@ -335,7 +311,6 @@ def main():
     root = tk.Tk()
     app = TireClassifierGUI(root)
     
-    # Auto-load model if available
     if os.path.exists(default_model_path):
         try:
             app.model = app.get_model(num_classes=2)
