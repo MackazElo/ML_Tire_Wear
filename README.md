@@ -35,9 +35,11 @@ Model rozróżnia dwie kategorie:
     📊 scikit-learn – metryki ewaluacji
 
 📁 Struktura projektu
+
 ![alt text](image.png)
 
 🚀 Instalacja
+
 1️⃣ Klonowanie repozytorium
 git clone https://github.com/your-username/tire-classifier.git
 cd tire-classifier
@@ -53,6 +55,7 @@ pip install pillow matplotlib seaborn scikit-learn
 pip install streamlit tqdm
 
 📊 Przygotowanie danych
+
 Organizuj dane w następującej strukturze:
 ![alt text](image-1.png)
 
@@ -68,6 +71,7 @@ cd src
 python train.py
 
 🖥️GUI
+
 cd src
 python gui.py
 ![alt text](image-6.png)
