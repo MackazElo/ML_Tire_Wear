@@ -57,6 +57,7 @@ pip install streamlit tqdm
 📊 Przygotowanie danych
 
 Organizuj dane w następującej strukturze:
+
 ![alt text](image-1.png)
 
 📷 Wymagania dla zdjęć:
